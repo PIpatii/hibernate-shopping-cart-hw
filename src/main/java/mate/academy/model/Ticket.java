@@ -1,6 +1,7 @@
 package mate.academy.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,6 +16,16 @@ public class Ticket {
     private MovieSession movieSession;
     @ManyToOne
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ShoppingCart shoppingCart;
+
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
+    }
+
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
 
     public long getId() {
         return id;

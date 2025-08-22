@@ -2,13 +2,10 @@ package mate.academy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import mate.academy.lib.Injector;
 import mate.academy.model.CinemaHall;
 import mate.academy.model.Movie;
 import mate.academy.model.MovieSession;
-import mate.academy.model.ShoppingCart;
-import mate.academy.model.Ticket;
 import mate.academy.model.User;
 import mate.academy.service.CinemaHallService;
 import mate.academy.service.MovieService;
@@ -66,26 +63,18 @@ public class Main {
                 fastAndFurious.getId(), LocalDate.now()));
 
         User user = new User();
-        user.setEmail("PetroIpatii");
+        user.setEmail("PetroIpatii3");
         user.setPassword("12345");
 
         UserService userService = (UserService) injector.getInstance(UserService.class);
         userService.add(user);
 
-        Ticket ticket = new Ticket();
-        ticket.setUser(user);
-        ticket.setMovieSession(yesterdayMovieSession);
-
         ShoppingCartService shoppingCartService = (ShoppingCartService) injector
                 .getInstance(ShoppingCartService.class);
 
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setUser(user);
-        shoppingCart.setTickets(List.of(ticket));
-
-        shoppingCartService.addSession(yesterdayMovieSession, user);
-        shoppingCartService.getByUser(user);
         shoppingCartService.registerNewShoppingCart(user);
-        shoppingCartService.clear(shoppingCart);
+        shoppingCartService.addSession(yesterdayMovieSession, user);
+        System.out.println(shoppingCartService.getByUser(user));
+        shoppingCartService.clear(shoppingCartService.getByUser(user));
     }
 }

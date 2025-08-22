@@ -19,7 +19,7 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
-            session.persist(shoppingCart);
+            session.save(shoppingCart);
             transaction.commit();
             return shoppingCart;
         } catch (Exception e) {
@@ -38,7 +38,8 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
     public Optional<ShoppingCart> getByUser(User user) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("from ShoppingCart sc "
-                                       + "where  sc.user = :user", ShoppingCart.class)
+                                   + "LEFT JOIN sc.user u "
+                                       + "where  u = :user", ShoppingCart.class)
                     .setParameter("user", user)
                     .uniqueResultOptional();
         } catch (Exception e) {
@@ -64,15 +65,6 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
             if (session != null) {
                 session.close();
             }
-        }
-    }
-
-    @Override
-    public void delete(ShoppingCart shoppingCart) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            session.remove(shoppingCart);
-        } catch (Exception e) {
-            throw new DataProcessingException("Cannot delete ShoppingCart ", e);
         }
     }
 }

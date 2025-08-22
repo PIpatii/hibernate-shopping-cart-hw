@@ -3,15 +3,16 @@ package mate.academy.service.impl;
 import java.util.Optional;
 import mate.academy.dao.ShoppingCartDao;
 import mate.academy.dao.TicketDao;
-import mate.academy.lib.Dao;
+import mate.academy.exception.DataProcessingException;
 import mate.academy.lib.Inject;
+import mate.academy.lib.Service;
 import mate.academy.model.MovieSession;
 import mate.academy.model.ShoppingCart;
 import mate.academy.model.Ticket;
 import mate.academy.model.User;
 import mate.academy.service.ShoppingCartService;
 
-@Dao
+@Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Inject
@@ -25,11 +26,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ticket.setUser(user);
         ticket.setMovieSession(movieSession);
         ticketDao.add(ticket);
+        Optional<ShoppingCart> shoppingCart = shoppingCartDao.getByUser(user);
+        if (shoppingCart.isPresent()) {
+            shoppingCart.get().getTickets().add(ticket);
+            shoppingCartDao.update(shoppingCart.get());
+        }
     }
 
     @Override
-    public Optional<ShoppingCart> getByUser(User user) {
-        return shoppingCartDao.getByUser(user);
+    public ShoppingCart getByUser(User user) {
+        return shoppingCartDao.getByUser(user).orElseThrow(() ->
+                new DataProcessingException("Cannot find Shopping Cart by User " + user));
     }
 
     @Override
@@ -41,6 +48,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void clear(ShoppingCart shoppingCart) {
-        shoppingCartDao.delete(shoppingCart);
+        shoppingCart.getTickets().clear();
+        shoppingCartDao.update(shoppingCart);
     }
 }
